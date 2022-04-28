@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DirectSecp256k1HdWallet, isOfflineDirectSigner, OfflineSigner } from '@cosmjs/proto-signing';
+import { DirectSecp256k1HdWallet, isOfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import config from './configs/config';
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { calculateFee, GasPrice } from '@cosmjs/stargate';
-import { encodeSecp256k1Pubkey, EnigmaUtils, pubkeyToAddress, Secp256k1Pen } from 'secretjs';
 @Injectable()
 export class AppService {
   async getHello(): Promise<any> {
