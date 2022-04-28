@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
+import { DirectSecp256k1HdWallet, isOfflineDirectSigner, OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import config from './configs/config';
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
+import { calculateFee, GasPrice } from '@cosmjs/stargate';
+import { encodeSecp256k1Pubkey, EnigmaUtils, pubkeyToAddress, Secp256k1Pen } from 'secretjs';
 @Injectable()
 export class AppService {
   async getHello(): Promise<any> {
@@ -19,8 +21,8 @@ export class AppService {
       wallet,
     );
     const tx = await client.getAllBalances(firstAccount.address);
-    console.log(tx);
-    const result = await this.getData(firstAccount);
+    await this.sendData(wallet, firstAccount.address);
+    await this.getData(firstAccount);
     return firstAccount.address;
   }
 
@@ -30,23 +32,30 @@ export class AppService {
       signer,
     );
     const contractAddress = config.smc.claim;
-    console.log(contractAddress);
     let queryResult = await cosmWasmClient.queryContractSmart(contractAddress, {
-      status_info: {},
+      get_count: {},
     });
     console.log(queryResult);
   }
 
-  // async sendDat(signer) {
-  //   const cosmWasmClient = await SigningCosmWasmClient.connectWithSigner(
-  //     config.network.rpc,
-  //     signer,
-  //   );
-  //   const contractAddress = config.smc.claim;
-  //   console.log(contractAddress);
-  //   let queryResult = await cosmWasmClient.queryContractSmart(contractAddress, {
-  //     status_info: {},
-  //   });
-  //   console.log(queryResult);
-  // }
+  async sendData(signer, wallet) {
+    const check = isOfflineDirectSigner(signer);
+    console.log(check)
+    const cosmWasmClient = await SigningCosmWasmClient.connectWithSigner(
+      config.network.rpc,
+      signer,
+    );
+    const contractAddress = config.smc.claim;
+    const handleMsg = { increment: {} };
+    const gasPrice = GasPrice.fromString('0.002uconst');
+    const txFee = calculateFee(300000, gasPrice);
+    console.log('ok');
+    let queryResult = await cosmWasmClient.execute(
+      wallet,
+      contractAddress,
+      handleMsg,
+      txFee,
+    );
+    console.log(queryResult);
+  }
 }
