@@ -13,4 +13,7 @@ export default {
     rpc: process.env.NETWORK_RPC || '',
     mnemonic: process.env.KEY_MNENONICE || '',
   },
+  smc: {
+    claim: process.env.CLAIM_CONTRACT || '',
+  },
 };
