@@ -9,7 +9,7 @@ export class AppService {
   async getHello(): Promise<any> {
     const mnemonic = config.network.mnemonic;
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
-      prefix: 'archway',
+      prefix: config.network.prefix,
     });
     const [firstAccount] = await wallet.getAccounts();
     console.log(firstAccount.address);
@@ -30,7 +30,7 @@ export class AppService {
       config.network.rpc,
       signer,
     );
-    const contractAddress = config.smc.claim;
+    const contractAddress = config.smc.cw20_base;
     let queryResult = await cosmWasmClient.queryContractSmart(contractAddress, {
       get_count: {},
     });
@@ -44,9 +44,9 @@ export class AppService {
       config.network.rpc,
       signer,
     );
-    const contractAddress = config.smc.claim;
+    const contractAddress = config.smc.cw20_base;
     const handleMsg = { increment: {} };
-    const gasPrice = GasPrice.fromString('0.002uconst');
+    const gasPrice = GasPrice.fromString(config.network.gasPrice);
     const txFee = calculateFee(300000, gasPrice);
     console.log('ok');
     let queryResult = await cosmWasmClient.execute(
