@@ -14,9 +14,9 @@ export default {
     mnemonic: process.env.KEY_MNENONICE || '',
     prefix: process.env.PREFIX || '',
     gasPrice: '0.002uconst',
+    gasLimit: 300000
   },
   smc: {
-    staking: process.env.STAKING_CONTRACT || '',
-    cw20_base: process.env.CW20_BASE_CONTRACT || '',
+    increments: process.env.INCREMENT_CONTRACT || '',
   },
 };
