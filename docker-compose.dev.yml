@@ -1,0 +1,9 @@
+version: '3.7'
+
+x-rest-api-env: &rest-api-env
+  INCREMENT_CONTRACT: ${INCREMENT_CONTRACT:-abc}
+
+services:
+  rest-api:
+    environment:
+      <<: *rest-api-env

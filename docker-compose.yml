@@ -1,0 +1,39 @@
+version: '3.7'
+
+# Environment variables for rest-api
+x-rest-api-env: &rest-api-env # Prefix
+  INCREMENT_CONTRACT: N/A
+
+services:
+  #######
+  # Proxy
+  #######
+  traefik:
+    image: traefik:${TRAEFIK_TAG:-v2.4}
+    container_name: 'traefik'
+    hostname: 'traefik'
+    command:
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+    ports:
+      - '80:80'
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+
+  ###########
+  # APIs
+  ###########
+  rest-api:
+    build:
+      context: .
+      target: production
+    restart: on-failure
+    ports:
+      - '3005:3005'
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.rest-api.rule=Host(`kori.localhost`)'
+      - 'traefik.http.routers.rest-api.entrypoints=web'
+    environment:
+      <<: *rest-api-env
